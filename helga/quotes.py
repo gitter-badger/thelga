@@ -35,6 +35,7 @@ class User(QuoteModel):
 class Quote(QuoteModel):
     # not unique, but unique per chat
     quote_id = IntegerField()
+    message_id = IntegerField()
 
     chat = ForeignKeyField(Chat, related_name='quotes')
     author = ForeignKeyField(User, related_name='quotes')
@@ -95,6 +96,7 @@ def add_quote(message):
     added_by = _get_db_user(message.from_user)
 
     quote = Quote.create(quote_id=chat.current_quote_id,
+                         message_id=message.reply_to_message.message_id,
                          chat=chat,
                          author=author,
                          added_by=added_by,
