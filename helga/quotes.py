@@ -130,7 +130,7 @@ def get_quote(message, quote_id):
     """
     Return a specific quote by id for the chat in which message was sent.
     :param message: telebot.types.Message
-    :param quote_id: Unique ID of quote in chat as int.
+    :param quote_id: int
     :return: helga.quotes.Quote
     """
     db.connect()
@@ -143,6 +143,22 @@ def get_quote(message, quote_id):
 
     db.close()
     return quote
+
+
+def search_quote(message, search_string):
+    """
+    Return a iterable containing every quote which includes search_string.
+    :param message: telebot.types.Message
+    :param search_string: str
+    :return: peewee.SelectQuery
+    """
+    db.connect()
+
+    chat = _get_db_chat(message.chat)
+    quotes = Quote.select().where((Quote.chat == chat) & (Quote.text.contains(search_string))).limit(10)
+
+    db.close()
+    return quotes
 
 
 def init_db():

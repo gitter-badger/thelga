@@ -21,8 +21,8 @@ def send_information(message):
 @bot.message_handler(commands=['addquote'], content_types=['text'])
 def add_quote_handler(message):
     if hasattr(message, 'reply_to_message'):
-        quote = helga.quotes.add_quote(message)
         try:
+            quote = helga.quotes.add_quote(message)
             bot.reply_to(message, "Quote #{} added successfully. \U0001F60B".format(quote.quote_id))
         except AttributeError:
             bot.reply_to(message, "Sorry, there has been an error. \U0001F622")
@@ -57,7 +57,18 @@ def get_quote_handler(message):
 
 @bot.message_handler(commands=['searchquote'], content_types=['text'])
 def search_quote_handler(message):
-    bot.reply_to(message, "Sooooon!")
+    match = re.match('/searchquote(@\w+)?\s(.*)', message.text)
+    try:
+        search_string = match.group(2)
+    except AttributeError:
+        bot.reply_to(message, "Sorry, say that again, please. Use /searchquote <search_string>. \U0001F609")
+        return
+
+    quotes = helga.quotes.search_quote(message, search_string)
+    if quotes:
+        bot.send_message(message.chat.id, helga.helper.format_quotes(quotes))
+    else:
+        bot.reply_to(message, "Sorry, I don’t have any quotes containing that string. \U0001F61E")
 
 
 def main():
