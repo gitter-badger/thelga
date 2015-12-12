@@ -1,5 +1,17 @@
 (t)helga
 ~~~~~~~~
 
-A Telegram bot, just because.
+A Telegram bot in Python 3, MIT-licensed, just because.
 Contribute, share, and be a responsible human being.
+
+Features:
+- Save, list and search quotes per chat (quotes.py)
+- TODO: Twitter integration (twitter.py)
+- TODO: Come up with more ideas (GO CRAZY!)
+
+Requirements:
+- pyTelegramBotAPI
+- peewee
+
+Feedback is always welcome!
+~~ buckket
