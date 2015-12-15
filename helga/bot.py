@@ -1,5 +1,6 @@
 import os
 import re
+import random
 
 import telebot
 
@@ -69,6 +70,11 @@ def search_quote_handler(message):
         bot.send_message(message.chat.id, helga.helper.format_quotes(quotes))
     else:
         bot.reply_to(message, "Sorry, I don’t have any quotes containing that string. \U0001F61E")
+
+
+@bot.message_handler(commands=['jn'], content_types=['text'])
+def yn_handler(message):
+    bot.reply_to(message, random.choice(('Ja', 'Nein')))
 
 
 def main():
