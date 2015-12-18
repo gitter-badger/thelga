@@ -43,3 +43,11 @@ def format_quotes(quotes):
     format_quote_short = partial(format_quote, short=True)
     return ', '.join(map(format_quote_short, quotes))
 
+
+def format_quotes_list(quotes):
+    """
+    Return a human-readable list representation of multiple Quote objects, one line for each.
+    :param quotes: iterable of helga.quotes.Quote
+    :return: str
+    """
+    return '\n'.join(map(format_quote, quotes))

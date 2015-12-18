@@ -163,6 +163,21 @@ def search_quote(message, search_string):
     return quotes
 
 
+def list_quotes(message):
+    """
+    Return all quotes for a specific chat.
+    :param message: telebot.types.Message
+    :return: peewee.SelectQuery
+    """
+    db.connect()
+
+    chat = _get_db_chat(message.chat)
+    quotes = Quote.select().where(Quote.chat == chat)
+
+    db.close()
+    return quotes
+
+
 def init_db():
     """
     Initialize database, create tables if necessary.

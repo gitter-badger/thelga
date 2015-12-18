@@ -72,6 +72,15 @@ def search_quote_handler(message):
         bot.reply_to(message, "Sorry, I don’t have any quotes containing that string. \U0001F61E")
 
 
+@bot.message_handler(commands=['listquotes'], content_types=['text'])
+def search_quote_handler(message):
+    quotes = helga.quotes.list_quotes(message)
+    if quotes:
+        bot.send_message(message.chat.id, helga.helper.format_quotes_list(quotes))
+    else:
+        bot.reply_to(message, "Sorry, I don’t have any quotes for this chat. \U0001F61E")
+
+
 @bot.message_handler(commands=['jn'], content_types=['text'])
 def yn_handler(message):
     bot.reply_to(message, random.choice(('Ja', 'Nein')))
