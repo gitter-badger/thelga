@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-import helga.bot
+
+import helga.app
+
 
 if __name__ == '__main__':
-    sys.exit(helga.bot.main())
-
-
+    sys.exit(helga.app.main())
