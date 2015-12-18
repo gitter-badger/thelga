@@ -2,8 +2,8 @@ import re
 
 from helga.bot import bot
 
-from .helper import format_quote, format_quotes, format_quotes_list
-from .database import add_quote, get_random_quote, get_quote, search_quote, list_quotes
+from helga.quotes.helper import format_quote, format_quotes, format_quotes_list
+from helga.quotes.database import add_quote, get_random_quote, get_quote, search_quote, list_quotes
 
 
 def add_quote_handler(message):

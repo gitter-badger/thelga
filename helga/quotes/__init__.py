@@ -1,7 +1,7 @@
 from helga.bot import bot
 
-from .database import init_db
-from .handler import add_quote_handler, \
+from helga.quotes.database import init_db
+from helga.quotes.handler import add_quote_handler, \
     get_random_quote_handler, get_quote_handler, \
     search_quote_handler, list_quotes_handler
 
