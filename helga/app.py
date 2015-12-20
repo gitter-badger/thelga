@@ -7,7 +7,6 @@ from helga import Helga
 from helga.config import load_config
 
 
-
 def main():
     load_config()
     loop = asyncio.get_event_loop()

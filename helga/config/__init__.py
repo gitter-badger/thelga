@@ -35,6 +35,3 @@ def load_config():
 
 
 
-api_token = 'blah'
-
-

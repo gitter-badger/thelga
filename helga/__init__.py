@@ -8,16 +8,15 @@
     :license: MIT, see LICENSE for more details.
 """
 import asyncio
-import weakref
+
+import aiohttp
 
 from helga.config import config
-from helga.plugins import HelpPlugin
+from helga.plugins import HelpPlugin, PluginRepository
 from helga.plugins.quotes import QuotePlugin
 from helga.telegram.api import API_URL
 from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage
 from helga.version import __version__
-
-import aiohttp
 
 
 class Helga:
@@ -32,10 +31,8 @@ class Helga:
         self._message_handlers = []
         self._command_prefix = '/'
         asyncio.ensure_future(self._init())
-        self.help = HelpPlugin(self)
-        self.help.register()
-        self.quotes = QuotePlugin(self)
-        self.quotes.register()
+        self._plugin_repository = PluginRepository(self)
+        self._plugin_repository.load_all()
 
     @asyncio.coroutine
     def _init(self):
