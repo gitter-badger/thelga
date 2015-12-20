@@ -1,12 +1,9 @@
 import os
 
 import telebot
+import helga.config
 
-
-if "TELEBOT_BOT_TOKEN" not in os.environ:
-    raise AssertionError("Please configure TELEBOT_BOT_TOKEN as environment variable.")
-
-bot = telebot.TeleBot(os.environ["TELEBOT_BOT_TOKEN"])
+bot = telebot.TeleBot(helga.config.api_token)
 
 
 @bot.message_handler(commands=['start', 'help'])

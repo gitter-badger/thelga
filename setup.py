@@ -37,5 +37,14 @@ setup(
     long_description=__doc__,
     packages=['helga'],
     install_requires=['pyTelegramBotAPI',
-                      'peewee']
+                      'peewee',
+                      'pyaml'
+                      ],
+    license='MIT',
+    include_package_data=True,
+    zip_safe=False,
+    entry_points={
+        'console_scripts': ['helga=helga.app:main']
+    }
+
 )
