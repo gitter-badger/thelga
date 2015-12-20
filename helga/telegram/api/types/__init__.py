@@ -29,9 +29,12 @@ class Structure(metaclass=StructureMeta):
             val = kwargs.get(k)
             if k.endswith('_'):
                 val = kwargs.get(k[:-1])
+
             if isinstance(v, StructureMeta):
                 if val:
                     setattr(new_cls, k, v(**val))
+                else:
+                    setattr(new_cls, k, None)
             elif isinstance(v, Type):
                 setattr(new_cls, k, v.parse_value(val))
         return new_cls
