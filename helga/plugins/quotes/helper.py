@@ -6,7 +6,7 @@ from functools import partial
 
 def format_timestamp(time):
     """
-    Return a human-readable timestamp.
+    Returns a human-readable timestamp.
     :param time: UNIX timestamp as int.
     :return: Formatted time string as str.
     """
@@ -15,7 +15,7 @@ def format_timestamp(time):
 
 def format_quote(quote, short=False):
     """
-    Return a human-readable string representation of a Quote object.
+    Returns a human-readable string representation of a Quote object.
     :param quote: helga.quotes.Quote
     :param short: bool
     :return: str
@@ -36,7 +36,7 @@ def format_quote(quote, short=False):
 
 def format_quotes(quotes):
     """
-    Return a human-readable string representation of multiple Quote objects.
+    Returns a human-readable string representation of multiple Quote objects.
     :param quotes: iterable of helga.quotes.Quote
     :return: str
     """
@@ -46,7 +46,7 @@ def format_quotes(quotes):
 
 def format_quotes_list(quotes):
     """
-    Return a human-readable list representation of multiple Quote objects, one line for each.
+    Returns a human-readable list representation of multiple Quote objects, one line for each.
     :param quotes: iterable of helga.quotes.Quote
     :return: str
     """

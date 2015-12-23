@@ -1,8 +1,10 @@
 import os
+
 from os.path import dirname, abspath
+from setuptools import setup
+
 
 # don't try this at home kids
-
 import distutils.command
 from distutils.command.sdist import sdist as _sdist
 
@@ -29,22 +31,35 @@ def get_version():
 __version__ = get_version()
 
 
-from setuptools import setup
-
 setup(
     name='helga',
     version=__version__,
-    long_description=__doc__,
+
+    url='https://github.com/buckket/thelga',
+
+    author='buckket',
+    author_email='buckket@cock.li',
+
     packages=['helga'],
-    install_requires=['pyTelegramBotAPI',
-                      'peewee',
-                      'pyaml'
-                      ],
-    license='MIT',
+
     include_package_data=True,
     zip_safe=False,
+
+    platforms='any',
+
+    install_requires=[
+        'pyTelegramBotAPI',
+        'aiohttp',
+        'peewee',
+        'pyaml',
+    ],
+
     entry_points={
         'console_scripts': ['helga=helga.app:main']
-    }
+    },
 
+    description='A Telegram bot in Python 3, MIT-licensed, inspired by Supybot.',
+    long_description=open('.README', 'r').read(),
+
+    license='MIT',
 )

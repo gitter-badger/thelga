@@ -4,9 +4,10 @@
 
     A Telegram bot in Python 3.
 
-    :copyright: (c) 2015 by buckket.
+    :copyright: (c) 2015 by buckket, teddydestodes.
     :license: MIT, see LICENSE for more details.
 """
+
 import asyncio
 
 import aiohttp
@@ -73,6 +74,7 @@ class Helga:
         return command.parse_result(resp['result'])
 
     def register_command(self, name, callback, chat_types=("private", "group", "supergroup", "channel")):
+        # TODO: Allow name to be a list
         if name in self._command_handlers:
             print('possible duplicate command')
         self._command_handlers[name] = (chat_types, callback)

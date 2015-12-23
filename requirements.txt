@@ -1,4 +1,4 @@
-aiohttp
 pyTelegramBotAPI
-pyaml
+aiohttp
 peewee
+pyaml

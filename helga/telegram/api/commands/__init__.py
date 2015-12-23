@@ -19,6 +19,7 @@ class TelegramCommand(Structure):
     def command(self):
         return self.__command__
 
+
 class GetMe(TelegramCommand):
     __command__ = 'getMe'
 

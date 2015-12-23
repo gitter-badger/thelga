@@ -47,7 +47,7 @@ class Quote(QuoteModel):
 
 def _get_db_user(user, update=True):
     """
-    Return a User object from database or create it, in case it doesnt exist.
+    Returns a User object from database or creates it, in case it doesnt exist.
     :param user: telebot.types.User
     :param update: Update data according to newest metadata received with the message.
     :return: helga.quotes.User
@@ -65,7 +65,7 @@ def _get_db_user(user, update=True):
 
 def _get_db_chat(chat, update=True):
     """
-    Return a Chat object from database or create it, in case it doesnt exist.
+    Returns a Chat object from database or creates it, in case it doesnt exist.
     :param chat: telebot.types.Chat
     :param update: Update data according to newest metadata received with the message.
     :return: helga.quotes.Chat
@@ -85,7 +85,7 @@ def _get_db_chat(chat, update=True):
 
 def add_quote(message):
     """
-    Add quote to database, return Quote object.
+    Adds quote to database, returns Quote object.
     :param message: telebot.types.Message
     :return: helga.quotes.Quote
     """
@@ -112,7 +112,7 @@ def add_quote(message):
 
 def get_random_quote(message):
     """
-    Return random quote for the chat in which message was sent.
+    Returns random quote for the chat in which message was sent.
     :param message: telebot.types.Message
     :return: helga.quotes.Quote
     """
@@ -130,7 +130,7 @@ def get_random_quote(message):
 
 def get_quote(message, quote_id):
     """
-    Return a specific quote by id for the chat in which message was sent.
+    Returns a specific quote by id for the chat in which message was sent.
     :param message: telebot.types.Message
     :param quote_id: int
     :return: helga.quotes.Quote
@@ -149,7 +149,7 @@ def get_quote(message, quote_id):
 
 def search_quote(message, search_string):
     """
-    Return a iterable containing every quote which includes search_string.
+    Returns a iterable containing every quote which includes search_string.
     :param message: telebot.types.Message
     :param search_string: str
     :return: peewee.SelectQuery
@@ -165,7 +165,7 @@ def search_quote(message, search_string):
 
 def list_quotes(message):
     """
-    Return all quotes for a specific chat.
+    Returns all quotes for a specific chat.
     :param message: telebot.types.Message
     :return: peewee.SelectQuery
     """
@@ -180,7 +180,7 @@ def list_quotes(message):
 
 def init_db():
     """
-    Initialize database, create tables if necessary.
+    Initializes database, creates tables if necessary.
     """
     db.connect()
     db.create_tables([Chat, User, Quote], True)

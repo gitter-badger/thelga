@@ -11,6 +11,7 @@ class StructureMeta(type):
             cls.registry = dict()
         cls.registry[cls.__name__] = cls
 
+
 class Type:
     def __init__(self, required=True):
         self._required = True
@@ -20,6 +21,7 @@ class Type:
 
     def get_value(self, val):
         return val
+
 
 class Structure(metaclass=StructureMeta):
 
@@ -54,20 +56,25 @@ class Structure(metaclass=StructureMeta):
                 if isinstance(v, reference):
                     setattr(klass, k, cls.registry[v._ref])
 
+
 class String(Type):
     pass
+
 
 class Integer(Type):
     pass
 
+
 class Boolean(Type):
     pass
+
 
 class User(Structure):
     id = Integer()
     first_name = String()
     last_name = String()
     username = String()
+
 
 class Chat(Structure):
     id = Integer()
@@ -76,6 +83,7 @@ class Chat(Structure):
     username = String()
     first_name = String()
     last_name = String()
+
 
 class Message(Structure):
     message_id = Integer()
@@ -87,6 +95,7 @@ class Message(Structure):
     forward_date = Integer()
     text = String()
     #audio = reference("Audio")
+
 
 class Update(Structure):
     update_id = Integer()
