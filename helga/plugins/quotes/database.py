@@ -92,8 +92,8 @@ def add_quote(message):
     db.connect()
 
     chat = _get_db_chat(message.chat)
-    author = _get_db_user(message.reply_to_message.from_user)
-    added_by = _get_db_user(message.from_user)
+    author = _get_db_user(message.reply_to_message.forward_from)
+    added_by = _get_db_user(message.from_)
 
     quote = Quote.create(quote_id=chat.current_quote_id,
                          message_id=message.reply_to_message.message_id,

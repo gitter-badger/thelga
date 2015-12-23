@@ -1,0 +1,8 @@
+bot:
+  token: token
+  owner: username
+plugins:
+  'helga.plugins:HelpPlugin':
+    null
+  'helga.plugins.quotes:QuotePlugin':
+    null
