@@ -13,9 +13,14 @@ class StructureMeta(type):
 
 
 class Type:
-    def __init__(self, target='params', required=True):
-        self.target = target
-        self._required = True
+    __target__ = 'params'
+
+    def __init__(self, required=True):
+        self._required = required
+
+    @property
+    def target(self):
+        return self.__target__
 
     def parse_value(self, val):
         return val
@@ -71,8 +76,7 @@ class Boolean(Type):
 
 
 class InputFile(Type):
-    def __init__(self, target='data', required=True):
-        super().__init__(target=target, required=required)
+    __target__ = 'data'
 
 
 class User(Structure):

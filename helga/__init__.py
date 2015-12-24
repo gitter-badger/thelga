@@ -34,12 +34,13 @@ class Helga:
         asyncio.ensure_future(self._init())
         self._plugin_repository = PluginRepository(self)
         self._plugin_repository.load_all()
+        self.myself = None
 
     @asyncio.coroutine
     def _init(self):
         try:
             cmd = GetMe()
-            yield from self._execute_command(cmd)
+            self.myself = yield from self._execute_command(cmd)
             asyncio.ensure_future(self._poll_updates())
         except Exception as exc:
             self.shutdown(exc=exc)
@@ -91,6 +92,14 @@ class Helga:
         if update.message.text:
             if update.message.text[0] == self._command_prefix:
                 args = update.message.text[1:].split()
+                if '@' in args[0]:
+                    # command was directed at a specific bot, check if we are the recipient
+                    command, username = args[0].split('@', 2)
+                    if username == self.myself.username:
+                        args[0] = command
+                    else:
+                        #no directed at me, goodbye
+                        return
                 if args[0] in self._command_handlers:
                     if update.message.chat.type not in self._command_handlers[args[0]][0]:
                         return

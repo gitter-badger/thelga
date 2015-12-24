@@ -1,4 +1,4 @@
-from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure
+from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure, User
 
 
 class TelegramCommand(Structure):
@@ -27,6 +27,9 @@ class TelegramCommand(Structure):
 
 class GetMe(TelegramCommand):
     __command__ = 'getMe'
+
+    def parse_result(self, result):
+        return User(**result)
 
 
 class SendMessage(TelegramCommand):
