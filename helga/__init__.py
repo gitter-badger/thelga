@@ -90,6 +90,7 @@ class Helga:
 
     def _handle_update(self, update):
         if update.message.text:
+            print(update.message.text)
             if update.message.text[0] == self._command_prefix:
                 args = update.message.text[1:].split()
                 if '@' in args[0]:
@@ -98,12 +99,12 @@ class Helga:
                     if username == self.myself.username:
                         args[0] = command
                     else:
-                        #no directed at me, goodbye
+                        # not directed at me, goodbye
                         return
                 if args[0] in self._command_handlers:
                     if update.message.chat.type not in self._command_handlers[args[0]][0]:
                         return
-                    self._command_handlers[args[0]][1](update.message, args[1:])
+                    self._command_handlers[args[0]][1](update.message, *args[1:])
             else:
                 for handler in self._message_handlers:
                     handler(update.message)
