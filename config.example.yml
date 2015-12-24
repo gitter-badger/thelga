@@ -6,3 +6,5 @@ plugins:
     null
   'helga.plugins.quotes:QuotePlugin':
     null
+  'helga.plugins.misc:MiscPlugin':
+    null
