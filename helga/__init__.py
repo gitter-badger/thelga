@@ -16,7 +16,7 @@ from helga.config import config
 from helga.plugins import HelpPlugin, PluginRepository
 from helga.plugins.quotes import QuotePlugin
 from helga.telegram.api import API_URL
-from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage
+from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto
 from helga.version import __version__
 
 
@@ -65,8 +65,9 @@ class Helga:
         action = {'get': aiohttp.get,
                   'post': aiohttp.post}.get(command.method)
 
-        r = yield from action(API_URL.format(token=config.get('bot')['token'],
-                                             method=command.command), params=command.get_params())
+        r = yield from action(API_URL.format(token=config.get('bot')['token'], method=command.command),
+                              params=command.get_params(),
+                              data=command.get_data())
 
         resp = yield from r.json()
         if not resp['ok']:
@@ -98,7 +99,17 @@ class Helga:
                 for handler in self._message_handlers:
                     handler(update.message)
 
-    def make_reply(self, message, text):
-        cmd = SendMessage(chat_id=message.chat.id, text=text)
+    def send_message(self, chat_id, text, **kwargs):
+        cmd = SendMessage(chat_id=chat_id, text=text, **kwargs)
         asyncio.ensure_future(self._execute_command(cmd))
 
+    def send_reply(self, message, text):
+        self.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
+
+    def forward_message(self, chat_id, from_chat_id, message_id):
+        cmd = ForwardMessage(chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id)
+        asyncio.ensure_future(self._execute_command(cmd))
+
+    def send_photo(self, chat_id, photo):
+        cmd = SendPhoto(chat_id=chat_id, photo=photo)
+        asyncio.ensure_future(self._execute_command(cmd))

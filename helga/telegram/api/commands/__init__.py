@@ -1,4 +1,4 @@
-from helga.telegram.api.types import Type, String, Boolean, Integer, Update, Structure
+from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure
 
 
 class TelegramCommand(Structure):
@@ -7,6 +7,9 @@ class TelegramCommand(Structure):
 
     def get_params(self):
         return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if isinstance(v, Type)}
+
+    def get_data(self):
+        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if isinstance(v, InputFile)}
 
     def parse_result(self, result):
         return result
@@ -32,6 +35,24 @@ class SendMessage(TelegramCommand):
     text = String()
     parse_mode = String()
     disable_web_page_preview = Boolean()
+    reply_to_message_id = Integer()
+
+
+class ForwardMessage(TelegramCommand):
+    __command__ = 'forwardMessage'
+    __method__ = 'post'
+
+    chat_id = String()
+    from_chat_id = String()
+    message_id = Integer()
+
+
+class SendPhoto(TelegramCommand):
+    __command__ = 'sendPhoto'
+    __method__ = 'post'
+
+    chat_id = String()
+    photo = InputFile()
 
 
 class GetUpdates(TelegramCommand):
