@@ -12,7 +12,7 @@ class MiscPlugin(Plugin):
 
     def yn(self, msg, *args):
         """ Prints 'yes' or 'no' """
-        self.bot.make_reply(msg, random.choice(('Ja', 'Nein')))
+        self.bot.send_reply(msg, random.choice(('Ja', 'Nein')))
 
     def random(self, msg, *args):
         """ Random number generator :smirk: """

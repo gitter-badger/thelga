@@ -13,18 +13,8 @@ class StructureMeta(type):
 
 
 class Type:
-    def __init__(self, required=True):
-        self._required = True
-
-    def parse_value(self, val):
-        return val
-
-    def get_value(self, val):
-        return val
-
-
-class InputFile:
-    def __init__(self, required=True):
+    def __init__(self, target='params', required=True):
+        self.target = target
         self._required = True
 
     def parse_value(self, val):
@@ -49,8 +39,6 @@ class Structure(metaclass=StructureMeta):
                 else:
                     setattr(new_cls, k, None)
             elif isinstance(v, Type):
-                setattr(new_cls, k, v.parse_value(val))
-            elif isinstance(v, InputFile):
                 setattr(new_cls, k, v.parse_value(val))
         return new_cls
 
@@ -80,6 +68,11 @@ class Integer(Type):
 
 class Boolean(Type):
     pass
+
+
+class InputFile(Type):
+    def __init__(self, target='data', required=True):
+        super().__init__(target=target, required=required)
 
 
 class User(Structure):

@@ -42,7 +42,7 @@ class HelpPlugin(Plugin):
 
     def print_help(self, msg, *args):
         """ Shows help and introduction """
-        self.bot.make_reply(msg, "Hi! I’m Helga! \U0001F61D\nGo ahead, check out my source and contribute. :3\n"
+        self.bot.send_reply(msg, "Hi! I’m Helga! \U0001F61D\nGo ahead, check out my source and contribute. :3\n"
                                  "https://github.com/buckket/thelga\n\n"
                                  "You can view my commands by typing /list\n\n"
                                  "My owner is: {owner}\n"
@@ -58,8 +58,8 @@ class HelpPlugin(Plugin):
                     prefix=self.bot._command_prefix,
                     command=command,
                     docstring=docstring)
-        self.bot.make_reply(msg, response)
+        self.bot.send_reply(msg, response)
 
     def show_info(self, msg, *args):
         """ Shows installed version """
-        self.bot.make_reply(msg, 'Hello, I’m Helga version {version}'.format(version=__version__))
+        self.bot.send_reply(msg, 'Hello, I’m Helga {version}'.format(version=__version__))

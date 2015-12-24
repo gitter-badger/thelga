@@ -103,8 +103,9 @@ class Helga:
         cmd = SendMessage(chat_id=chat_id, text=text, **kwargs)
         asyncio.ensure_future(self._execute_command(cmd))
 
-    def send_reply(self, message, text):
-        self.send_message(message.chat.id, text, reply_to_message_id=message.message_id)
+    def send_reply(self, message, text, as_reply=False):
+        reply_to_message_id = message.message_id if as_reply else None
+        self.send_message(message.chat.id, text, reply_to_message_id=reply_to_message_id)
 
     def forward_message(self, chat_id, from_chat_id, message_id):
         cmd = ForwardMessage(chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id)

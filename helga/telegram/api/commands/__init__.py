@@ -6,10 +6,12 @@ class TelegramCommand(Structure):
     __method__ = 'get'
 
     def get_params(self):
-        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if isinstance(v, Type)}
+        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
+                (isinstance(v, Type) and v.target == 'params')}
 
     def get_data(self):
-        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if isinstance(v, InputFile)}
+        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
+                (isinstance(v, Type) and v.target == 'data')}
 
     def parse_result(self, result):
         return result
