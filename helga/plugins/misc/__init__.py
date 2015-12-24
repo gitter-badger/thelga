@@ -32,7 +32,7 @@ class MiscPlugin(Plugin):
             maxint = int(maxint)
             results = []
             for roll in range(rolls):
-                results.append(str(random.randint(1, maxint+1)))
+                results.append(str(random.randint(1, maxint)))
             self.bot.send_reply(msg, ' '.join(results))
         except Exception as e:
             self.bot.send_reply(msg, 'Please use Format <numrolls>d<sides>')
