@@ -30,6 +30,11 @@ class MiscPlugin(Plugin):
             rolls, maxint = args[0].split('d')
             rolls = int(rolls)
             maxint = int(maxint)
+
+            if rolls > 100 or maxint > 100:
+                self.bot.send_reply(msg, "Very funny.")
+                return
+
             results = []
             for roll in range(rolls):
                 results.append(str(random.randint(1, maxint)))
