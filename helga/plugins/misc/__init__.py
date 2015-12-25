@@ -23,8 +23,8 @@ class MiscPlugin(Plugin):
         self.bot.send_photo(msg.chat.id, photo=open('test.jpg', 'rb'))
 
     def dice(self, msg, *args):
-        """rolls a dice, format <rolls>d<sides>"""
-        if (len(args) == 0):
+        """ Rolls a dice, format <rolls>d<sides>"""
+        if len(args) == 0:
             args = ['1d6']
         try:
             rolls, maxint = args[0].split('d')
@@ -35,5 +35,5 @@ class MiscPlugin(Plugin):
                 results.append(str(random.randint(1, maxint)))
             self.bot.send_reply(msg, ' '.join(results))
         except Exception as e:
-            self.bot.send_reply(msg, 'Please use Format <numrolls>d<sides>')
+            self.bot.send_reply(msg, "Please use format <rolls>d<sides>")
 
