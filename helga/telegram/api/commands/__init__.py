@@ -1,4 +1,4 @@
-from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure, User
+from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Float, Update, Structure, User
 
 
 class TelegramCommand(Structure):
@@ -27,6 +27,7 @@ class TelegramCommand(Structure):
 
 class GetMe(TelegramCommand):
     __command__ = 'getMe'
+    __method__ = 'get'
 
     def parse_result(self, result):
         return User(**result)
@@ -41,6 +42,7 @@ class SendMessage(TelegramCommand):
     parse_mode = String()
     disable_web_page_preview = Boolean()
     reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
 
 
 class ForwardMessage(TelegramCommand):
@@ -58,6 +60,99 @@ class SendPhoto(TelegramCommand):
 
     chat_id = String()
     photo = InputFile()
+    caption = String()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendAudio(TelegramCommand):
+    __command__ = 'sendAudio'
+    __method__ = 'post'
+
+    chat_id = String()
+    audio = InputFile()
+    duration = Integer()
+    performer = String()
+    title = String()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendDocument(TelegramCommand):
+    __command__ = 'sendDocument'
+    __method__ = 'post'
+
+    chat_id = String()
+    document = InputFile()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendSticker(TelegramCommand):
+    __command__ = 'sendSticker'
+    __method__ = 'post'
+
+    chat_id = String()
+    sticker = InputFile()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendVideo(TelegramCommand):
+    __command__ = 'sendVideo'
+    __method__ = 'post'
+
+    chat_id = String()
+    video = InputFile()
+    duration = Integer()
+    caption = String()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendVoice(TelegramCommand):
+    __command__ = 'sendVoice'
+    __method__ = 'post'
+
+    chat_id = String()
+    voice = InputFile()
+    duration = Integer()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendLocation(TelegramCommand):
+    __command__ = 'sendLocation'
+    __method__ = 'post'
+
+    latitude = Float()
+    longitude = Float()
+    reply_to_message_id = Integer()
+    #reply_markup = ReplyMarkup
+
+
+class SendChatAction(TelegramCommand):
+    __command__ = 'sendChatAction'
+    __method__ = 'post'
+
+    chat_id = String()
+    action = String()
+
+
+class GetUserProfilePhotos(TelegramCommand):
+    __command__ = 'getUserProfilePhotos'
+    __method__ = 'get'
+
+    user_id = Integer()
+    offset = Integer()
+    limit = Integer()
+
+
+class GetFile(TelegramCommand):
+    __command__ = 'getFile'
+    __method__ = 'get'
+
+    file_id = String()
 
 
 class GetUpdates(TelegramCommand):
@@ -73,5 +168,3 @@ class GetUpdates(TelegramCommand):
             update = Update(**item)
             updates.append(update)
         return updates
-
-
