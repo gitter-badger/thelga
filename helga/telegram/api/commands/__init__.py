@@ -1,4 +1,4 @@
-from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure, User
+from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure, User, Descriptor
 
 
 class TelegramCommand(Structure):
@@ -6,12 +6,12 @@ class TelegramCommand(Structure):
     __method__ = 'get'
 
     def get_params(self):
-        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
-                (isinstance(v, Type) and v.target == 'params')}
+        return {k: v.cls.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
+                (isinstance(v, Descriptor) and isinstance(v.cls, Type) and v.cls.target == 'params')}
 
     def get_data(self):
-        return {k: v.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
-                (isinstance(v, Type) and v.target == 'data')}
+        return {k: v.cls.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
+                (isinstance(v, Descriptor) and isinstance(v.cls, Type) and v.cls.target == 'data')}
 
     def parse_result(self, result):
         return result
@@ -73,5 +73,3 @@ class GetUpdates(TelegramCommand):
             update = Update(**item)
             updates.append(update)
         return updates
-
-

@@ -1,19 +1,22 @@
+import logging
 import signal
 import asyncio
 import functools
 
 from helga import Helga
 from helga.config import load_config
+from helga.log import init_logging
 
 
 def main():
     load_config()
+    init_logging()
 
     loop = asyncio.get_event_loop()
     helga = Helga(loop=loop)
 
     def ask_exit(signal_name):
-        print("Got signal {}: exiting…".format(signal_name))
+        logging.info("Got signal {}: exiting…".format(signal_name))
         helga.shutdown()
 
     for signal_name in ('SIGINT', 'SIGTERM'):

@@ -1,5 +1,7 @@
 import random
 
+import sys
+
 from helga.plugins import Plugin
 
 
@@ -27,13 +29,15 @@ class MiscPlugin(Plugin):
         if (len(args) == 0):
             args = ['1d6']
         try:
-            rolls, maxint = args[0].split('d')
-            rolls = int(rolls)
+            rolls, maxint = map(int, args[0].split('d'))
+            if rolls > 30 or maxint > 1000:
+                self.bot.send_reply(msg, 'Please use more reasonable values!')
+                return
             maxint = int(maxint)
             results = []
             for roll in range(rolls):
                 results.append(str(random.randint(1, maxint)))
             self.bot.send_reply(msg, ' '.join(results))
         except Exception as e:
-            self.bot.send_reply(msg, 'Please use Format <numrolls>d<sides>')
+            self.bot.send_reply(msg, 'An error occured!')
 

@@ -9,6 +9,7 @@
 """
 
 import asyncio
+import logging
 
 import aiohttp
 
@@ -18,6 +19,9 @@ from helga.plugins.quotes import QuotePlugin
 from helga.telegram.api import API_URL
 from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto
 from helga.version import __version__
+
+
+logger = logging.getLogger('helga')
 
 
 class Helga:
@@ -39,33 +43,35 @@ class Helga:
     @asyncio.coroutine
     def _init(self):
         try:
+            logger.info('Retrieving account information')
             cmd = GetMe()
             self.myself = yield from self._execute_command(cmd)
             asyncio.ensure_future(self._poll_updates())
         except Exception as exc:
+            logger.critical('Error retrieving account information')
             self.shutdown(exc=exc)
 
     @asyncio.coroutine
     def _poll_updates(self):
         try:
-            cmd = GetUpdates(timeout=10, offset=self._last_update_id)
+            cmd = GetUpdates(timeout=10, offset=self._last_update_id + 1)
             updates = yield from self._execute_command(cmd)
             for update in updates:
-                self._last_update_id = update.update_id + 1
+                self._last_update_id = update.update_id
                 self._loop.call_soon(self._handle_update, update)
         finally:
             asyncio.ensure_future(self._poll_updates())
 
     def shutdown(self, exc=None):
         if exc:
-            print('Exception'+str(exc))
+            logger.exception(exc)
+        logger.info('Shutting down')
         self._loop.stop()
 
     @asyncio.coroutine
     def _execute_command(self, command):
         action = {'get': aiohttp.get,
                   'post': aiohttp.post}.get(command.method)
-
         r = yield from action(API_URL.format(token=config.get('bot')['token'], method=command.command),
                               params=command.get_params(),
                               data=command.get_data())
@@ -90,7 +96,6 @@ class Helga:
 
     def _handle_update(self, update):
         if update.message.text:
-            print(update.message.text)
             if update.message.text[0] == self._command_prefix:
                 args = update.message.text[1:].split()
                 if '@' in args[0]:

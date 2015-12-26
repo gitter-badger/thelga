@@ -5,7 +5,7 @@ import yaml
 
 
 # TODO: .config is the place to go, see standard
-DEFAULT_CONFIG = '~/.helga'
+DEFAULT_CONFIG = os.path.expanduser('~/.helga')
 
 
 # TODO: More specific help texts
@@ -22,7 +22,7 @@ class Config:
 
     def load_config(self):
         args = parser.parse_args()
-        self.workdir = args.workdir
+        self.workdir = os.path.expanduser(args.workdir)
         self.parse_yaml()
 
     def parse_yaml(self):

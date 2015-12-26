@@ -59,7 +59,7 @@ setup(
     },
 
     description='A Telegram bot in Python 3, MIT-licensed, inspired by Supybot.',
-    long_description=open('.README', 'r').read(),
+    #long_description=open('.README', 'r').read(),
 
     license='MIT',
 )
