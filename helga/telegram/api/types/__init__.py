@@ -110,6 +110,10 @@ class Integer(Type):
     pass
 
 
+class Float(Type):
+    pass
+
+
 class Boolean(Type):
     pass
 

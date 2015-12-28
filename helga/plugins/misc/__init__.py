@@ -26,7 +26,7 @@ class MiscPlugin(Plugin):
         self.bot.send_photo(msg.chat.id, photo=open('test.jpg', 'rb'))
 
     def dice(self, msg, *args):
-        """rolls a dice, format <rolls>d<sides>"""
+        """ Rolls a dice, format <rolls>d<sides>"""
         if len(args) == 0:
             args = ['1d6']
         try:
@@ -35,6 +35,11 @@ class MiscPlugin(Plugin):
                 self.bot.send_reply(msg, 'Please use more reasonable values!')
                 return
             maxint = int(maxint)
+
+            if rolls > 100 or maxint > 100:
+                self.bot.send_reply(msg, "Very funny.")
+                return
+
             results = []
             for roll in range(rolls):
                 results.append(str(random.randint(1, maxint)))

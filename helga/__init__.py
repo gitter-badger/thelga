@@ -115,7 +115,7 @@ class Helga:
                     if username == self.myself.username:
                         args[0] = command
                     else:
-                        # not directed at me, goodbye
+                        # not directed at us, goodbye
                         return
                 if args[0] in self._command_handlers:
                     if update.message.chat.type not in self._command_handlers[args[0]][0]:
