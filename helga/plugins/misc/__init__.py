@@ -27,7 +27,7 @@ class MiscPlugin(Plugin):
 
     def dice(self, msg, *args):
         """rolls a dice, format <rolls>d<sides>"""
-        if (len(args) == 0):
+        if len(args) == 0:
             args = ['1d6']
         try:
             rolls, maxint = map(int, args[0].split('d'))
@@ -45,8 +45,5 @@ class MiscPlugin(Plugin):
     @asyncio.coroutine
     def download_test(self, msg, *args):
         if msg.photo:
-            print(msg.photo.photos[0])
             keks = yield from msg.photo.photos[0].download(self.bot)
-            print(keks)
-        print('weeee')
 

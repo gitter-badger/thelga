@@ -114,6 +114,10 @@ class Boolean(Type):
     pass
 
 
+class Bytes(Type):
+    pass
+
+
 class Date(Type):
 
     def parse_value(self, val):
@@ -145,10 +149,8 @@ class Resource(Structure):
     """
     file_id = String()
     file_size = Integer()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._data = None
+    contents = Bytes()
+    file_path = String()
 
     @asyncio.coroutine
     def download(self, bot):
@@ -159,10 +161,10 @@ class Resource(Structure):
         :param bot: helga.Helga
         :return: binary Data
         """
-        if self._data is None:
+        if self.contents is None:
             # if no data cached, download
-            self._data = yield from bot.download(self.file_id)
-        return self._data
+            self.file_path, self.contents = yield from bot.download(self.file_id)
+        return self.contents
 
 
 class VoiceResource(Resource):
@@ -174,6 +176,10 @@ class PhotoResource(Resource):
 
     width = Integer()
     height = Integer()
+
+
+class StickerResource(PhotoResource):
+    thumb = Reference("PhotoResource")
 
 
 class PhotoSizes(Structure):
@@ -217,6 +223,7 @@ class Message(Structure):
     caption = String()
     voice = Reference("VoiceResource")
     photo = Reference("PhotoSizes")
+    sticker = Reference("StickerResource")
 
 
 class Update(Structure):

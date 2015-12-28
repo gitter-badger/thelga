@@ -80,8 +80,8 @@ class Helga:
                   'post': aiohttp.post}.get(command.method)
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Executing command {command} params={params} data={data}".format(command=command.command,
-                                                                                      params=command.get_params(),
-                                                                                      data=command.get_data()))
+                                                                                          params=command.get_params(),
+                                                                                          data=command.get_data()))
         r = yield from action(API_URL.format(token=config.get('bot')['token'], method=command.command),
                               params=command.get_params(),
                               data=command.get_data())
@@ -105,8 +105,8 @@ class Helga:
         return self._command_handlers
 
     def _handle_update(self, update):
-        if update.message.text or update.message.caption:
-            command = update.message.text or update.message.caption
+        command = update.message.text or update.message.caption
+        if command:
             if command[0] == self._command_prefix:
                 args = command[1:].split()
                 if '@' in args[0]:
@@ -126,9 +126,12 @@ class Helga:
                     else:
                         call_args = (self._command_handlers[args[0]][1], update.message) + tuple(args[1:0])
                         self._loop.call_soon(*call_args)
+
+        for handler in self._message_handlers:
+            if asyncio.iscoroutinefunction(handler):
+                asyncio.ensure_future(handler(update.message))
             else:
-                for handler in self._message_handlers:
-                    handler(update.message)
+                self._loop.call_soon(handler, update.message)
 
     def send_message(self, chat_id, text, **kwargs):
         cmd = SendMessage(chat_id=chat_id, text=text, **kwargs)
@@ -150,13 +153,14 @@ class Helga:
     def download(self, file_id):
         """ Downloads a File and returns its data
 
-        :param file_id: str
+        :param resource: Resource
         :return: bytes
         """
         cmd = GetFile(file_id=file_id)
         file = yield from self._execute_command(cmd)
+        logger.debug('Downloading file {path}'.format(path=file.file_path))
         r = yield from aiohttp.get(FILE_URL.format(token=config.get('bot')['token'],
                                                    path=file.file_path))
 
         data = yield from r.read()
-        return data
+        return file.file_path, data
