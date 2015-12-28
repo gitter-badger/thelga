@@ -16,8 +16,8 @@ import aiohttp
 from helga.config import config
 from helga.plugins import HelpPlugin, PluginRepository
 from helga.plugins.quotes import QuotePlugin
-from helga.telegram.api import API_URL
-from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto
+from helga.telegram.api import API_URL, FILE_URL
+from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto, GetFile
 from helga.version import __version__
 
 
@@ -46,6 +46,8 @@ class Helga:
             logger.info('Retrieving account information')
             cmd = GetMe()
             self.myself = yield from self._execute_command(cmd)
+            logger.info('Successfully loaded account information.'
+                        ' Username: {username}'.format(username=self.myself.username))
             asyncio.ensure_future(self._poll_updates())
         except Exception as exc:
             logger.critical('Error retrieving account information')
@@ -54,11 +56,15 @@ class Helga:
     @asyncio.coroutine
     def _poll_updates(self):
         try:
-            cmd = GetUpdates(timeout=10, offset=self._last_update_id + 1)
+            cmd = GetUpdates(timeout=10, offset=self._last_update_id)
             updates = yield from self._execute_command(cmd)
             for update in updates:
-                self._last_update_id = update.update_id
+                self._last_update_id = update.update_id + 1
                 self._loop.call_soon(self._handle_update, update)
+        except Exception as e:
+            logger.exception(e)
+            # just sleep a bit, we don't want to accidentially spam the server
+            yield from asyncio.sleep(5)
         finally:
             asyncio.ensure_future(self._poll_updates())
 
@@ -72,6 +78,10 @@ class Helga:
     def _execute_command(self, command):
         action = {'get': aiohttp.get,
                   'post': aiohttp.post}.get(command.method)
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Executing command {command} params={params} data={data}".format(command=command.command,
+                                                                                      params=command.get_params(),
+                                                                                      data=command.get_data()))
         r = yield from action(API_URL.format(token=config.get('bot')['token'], method=command.command),
                               params=command.get_params(),
                               data=command.get_data())
@@ -84,7 +94,7 @@ class Helga:
     def register_command(self, name, callback, chat_types=("private", "group", "supergroup", "channel")):
         # TODO: Allow name to be a list
         if name in self._command_handlers:
-            print('possible duplicate command')
+            logger.warning('Possible duplicate command "{command}"'.format(command=name))
         self._command_handlers[name] = (chat_types, callback)
 
     def register_message_handler(self, callback):
@@ -95,9 +105,10 @@ class Helga:
         return self._command_handlers
 
     def _handle_update(self, update):
-        if update.message.text:
-            if update.message.text[0] == self._command_prefix:
-                args = update.message.text[1:].split()
+        if update.message.text or update.message.caption:
+            command = update.message.text or update.message.caption
+            if command[0] == self._command_prefix:
+                args = command[1:].split()
                 if '@' in args[0]:
                     # command was directed at a specific bot, check if we are the recipient
                     command, username = args[0].split('@', 2)
@@ -109,7 +120,12 @@ class Helga:
                 if args[0] in self._command_handlers:
                     if update.message.chat.type not in self._command_handlers[args[0]][0]:
                         return
-                    self._command_handlers[args[0]][1](update.message, *args[1:])
+
+                    if asyncio.iscoroutinefunction(self._command_handlers[args[0]][1]):
+                        asyncio.ensure_future(self._command_handlers[args[0]][1](update.message, *args[1:0]))
+                    else:
+                        call_args = (self._command_handlers[args[0]][1], update.message) + tuple(args[1:0])
+                        self._loop.call_soon(*call_args)
             else:
                 for handler in self._message_handlers:
                     handler(update.message)
@@ -129,3 +145,18 @@ class Helga:
     def send_photo(self, chat_id, photo):
         cmd = SendPhoto(chat_id=chat_id, photo=photo)
         asyncio.ensure_future(self._execute_command(cmd))
+
+    @asyncio.coroutine
+    def download(self, file_id):
+        """ Downloads a File and returns its data
+
+        :param file_id: str
+        :return: bytes
+        """
+        cmd = GetFile(file_id=file_id)
+        file = yield from self._execute_command(cmd)
+        r = yield from aiohttp.get(FILE_URL.format(token=config.get('bot')['token'],
+                                                   path=file.file_path))
+
+        data = yield from r.read()
+        return data

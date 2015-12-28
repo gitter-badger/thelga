@@ -1,6 +1,6 @@
+import asyncio
 import random
 
-import sys
 
 from helga.plugins import Plugin
 
@@ -12,6 +12,7 @@ class MiscPlugin(Plugin):
         self.bot.register_command('random', self.random)
         self.bot.register_command('test', self.test)
         self.bot.register_command('dice', self.dice)
+        self.bot.register_command('dt', self.download_test)
 
     def yn(self, msg, *args):
         """ Prints 'yes' or 'no' """
@@ -40,4 +41,12 @@ class MiscPlugin(Plugin):
             self.bot.send_reply(msg, ' '.join(results))
         except Exception as e:
             self.bot.send_reply(msg, 'An error occured!')
+
+    @asyncio.coroutine
+    def download_test(self, msg, *args):
+        if msg.photo:
+            print(msg.photo.photos[0])
+            keks = yield from msg.photo.photos[0].download(self.bot)
+            print(keks)
+        print('weeee')
 

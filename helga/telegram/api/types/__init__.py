@@ -1,7 +1,10 @@
+import asyncio
 import datetime
 
 
-class reference:
+class Reference:
+    """ This class Keeps a reference to another Structure
+    """
     def __init__(self, ref):
         self.ref = ref
 
@@ -17,14 +20,18 @@ class Descriptor(object):
         # convert the value to `cls` and write to instance dict
         if isinstance(self.cls, Type):
             instance.__dict__[self.name] = self.cls.parse_value(value)
-        if isinstance(self.cls, reference):
-            instance.__dict__[self.name] = instance.registry[self.cls.ref](**value)
+        if isinstance(self.cls, Reference):
+            if isinstance(value, dict):
+                instance.__dict__[self.name] = instance.registry[self.cls.ref](**value)
+            elif isinstance(value, (tuple, list)):
+                instance.__dict__[self.name] = instance.registry[self.cls.ref](*value)
 
     def __get__(self, instance, cls):
         if instance is None:
             return self
         # retrieve the value from instance dict
         return instance.__dict__.get(self.name, self.default)
+
 
 class StructureMeta(type):
 
@@ -36,14 +43,18 @@ class StructureMeta(type):
 
     def __new__(meta, name, bases, clsdict):
         for k, v in clsdict.copy().items():
-            if isinstance(v, (Type, reference)):
+            if isinstance(v, (Type, Reference)):
                 clsdict[k] = Descriptor(k, v)
         return super(StructureMeta, meta).__new__(meta, name, bases, clsdict)
 
     def resolve_reference(cls, ref):
         return cls.registry[ref]
 
+
 class Type:
+    """ Baseclass for all Types
+    like scalar Values returned by the Telegram API
+    """
     __target__ = 'params'
 
     def __init__(self, required=True):
@@ -61,19 +72,28 @@ class Type:
 
 
 class Structure(object, metaclass=StructureMeta):
+    """ Base class for Structures returned by the Telegram API
+    """
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             try:
                 ce = getattr(self.__class__, k)
             except AttributeError:
+                # this is a stupid hack due to my laziness
+                # if someone would implement a storage and/or lookuptable we wouldn't rely on the
+                # classmembernames directly
                 ce = getattr(self.__class__, k+'_')
-                k = k+'_'
+                k += '_'
 
             if isinstance(ce, Descriptor):
                 setattr(self, k, v)
 
     def get_value(self):
+        """ Returns this Structure and all substructures as a dict to be fed into some json encoder
+
+        :return: dict
+        """
         data = {}
         for k, v in self.__class__.__dict__.items():
             if isinstance(v, StructureMeta):
@@ -107,34 +127,66 @@ class Date(Type):
 
 
 class InputFile(Type):
+    """ This Type represents a File to be Uploaded to Telegram
+    """
     __target__ = 'data'
 
 
-class Ressource(Structure):
+class File(Structure):
+    """ Fileinformation struct returned by the Telegram API
+    """
     file_id = String()
-
-    def set_data(self, data):
-        self._data = data
-
-    def get_data(self):
-        if hasattr(self, '_data'):
-            return self._data
-        else:
-            self._download()
-
-    def del_data(self):
-        self._data = None
-    data = property(get_data, set_data, del_data)
-
-    def _download(self):
-        print('downloading...' + self.file_id)
-        pass
-
-
-class VoiceRessource(Ressource):
-    duration = Integer()
     file_size = Integer()
+    file_path = String()
+
+
+class Resource(Structure):
+    """ Baseclass for Resources posted in chat
+    """
+    file_id = String()
+    file_size = Integer()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._data = None
+
+    @asyncio.coroutine
+    def download(self, bot):
+        """ Downloads this resource
+
+        Cached data will be returned if available.
+
+        :param bot: helga.Helga
+        :return: binary Data
+        """
+        if self._data is None:
+            # if no data cached, download
+            self._data = yield from bot.download(self.file_id)
+        return self._data
+
+
+class VoiceResource(Resource):
+    duration = Integer()
     mime_type = String()
+
+
+class PhotoResource(Resource):
+
+    width = Integer()
+    height = Integer()
+
+
+class PhotoSizes(Structure):
+    """ List of Photo Resources
+
+    this is actually a Resource but since Telegram provides multiple sizes for pictures
+    we need to represent them somehow
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.photos = []
+        for photo_args in args:
+            self.photos.append(PhotoResource(**photo_args))
 
 
 class User(Structure):
@@ -155,16 +207,18 @@ class Chat(Structure):
 
 class Message(Structure):
     message_id = Integer()
-    from_ = reference("User")
+    from_ = Reference("User")
     date = Date()
-    chat = reference("Chat")
-    reply_to_message = reference("Message")
-    forward_from = reference("User")
+    chat = Reference("Chat")
+    reply_to_message = Reference("Message")
+    forward_from = Reference("User")
     forward_date = Integer()
     text = String()
-    voice = reference("VoiceRessource")
+    caption = String()
+    voice = Reference("VoiceResource")
+    photo = Reference("PhotoSizes")
 
 
 class Update(Structure):
     update_id = Integer()
-    message = reference("Message")
+    message = Reference("Message")
