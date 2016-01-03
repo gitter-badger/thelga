@@ -1,3 +1,5 @@
+import os
+import shelve
 import sys
 import importlib
 
@@ -63,3 +65,15 @@ class HelpPlugin(Plugin):
     def show_info(self, msg, *args):
         """ Shows installed version """
         self.bot.send_reply(msg, 'Hello, I’m Helga {version}'.format(version=__version__))
+
+
+class RegisterChat(Plugin):
+
+    def register(self):
+        self.bot.register_command('chat_register', self.chat_register, chat_types=('private',))
+
+    def chat_register(self, msg, *args):
+        with shelve.open(os.path.join(config.workdir, 'chat.shelve')) as s:
+            s[msg.from_.username] = msg.chat.id
+            self.bot.send_reply(msg, "Registered your Username '{username}' with chat '{chat}'".format(username=msg.from_.username,
+                                                                                                               chat=msg.chat.id))

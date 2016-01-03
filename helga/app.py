@@ -25,6 +25,6 @@ def main():
     # TODO: Add signal handler for SIGHUP (reload config)
 
     try:
-        loop.run_forever()
+        loop.run_until_complete(helga.get_updates())
     finally:
         loop.close()
