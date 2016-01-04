@@ -8,3 +8,5 @@ plugins:
     null
   'helga.plugins.misc:MiscPlugin':
     null
+  'helga.plugins.evil:PictureGrabber':
+    null

@@ -8,6 +8,7 @@ from setuptools import setup
 import distutils.command
 from distutils.command.sdist import sdist as _sdist
 
+
 class sdist(_sdist):
     """stuff"""
     def make_release_tree(self, base_dir, files):
@@ -20,6 +21,7 @@ class sdist(_sdist):
 
 # overwriting standard sdist command
 distutils.command.sdist.sdist = sdist
+
 
 def get_version():
     with open(os.path.join(dirname(abspath(__file__)), 'helga', 'version.py')) as f:
@@ -48,7 +50,6 @@ setup(
     platforms='any',
 
     install_requires=[
-        'pyTelegramBotAPI',
         'aiohttp',
         'peewee',
         'pyaml',
@@ -59,7 +60,7 @@ setup(
     },
 
     description='A Telegram bot in Python 3, MIT-licensed, inspired by Supybot.',
-    #long_description=open('.README', 'r').read(),
+    long_description=open('./README', 'r').read(),
 
     license='MIT',
 )

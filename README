@@ -12,7 +12,6 @@ Features:
 - TODO: Twitter integration (twitter)
 
 Requirements:
-- pyTelegramBotAPI
 - aiohttp
 - peewee
 - pyaml
