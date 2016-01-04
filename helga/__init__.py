@@ -17,7 +17,7 @@ from helga.config import config
 from helga.plugins import HelpPlugin, PluginRepository
 from helga.plugins.quotes import QuotePlugin
 from helga.telegram.api import API_URL, FILE_URL
-from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto, GetFile
+from helga.telegram.api.commands import GetMe, GetUpdates, SendMessage, ForwardMessage, SendPhoto, SendDocument, GetFile
 from helga.version import __version__
 
 
@@ -147,6 +147,10 @@ class Helga:
 
     def send_photo(self, chat_id, photo):
         cmd = SendPhoto(chat_id=chat_id, photo=photo)
+        asyncio.ensure_future(self._execute_command(cmd))
+
+    def send_document(self, chat_id, document):
+        cmd = SendDocument(chat_id=chat_id, document=document)
         asyncio.ensure_future(self._execute_command(cmd))
 
     @asyncio.coroutine

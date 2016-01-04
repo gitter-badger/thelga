@@ -1,9 +1,15 @@
 import re
+import logging
+
+from io import BytesIO
 
 from helga.plugins import Plugin
 
 from .helper import format_quote, format_quotes, format_quotes_list
 from .database import add_quote, get_random_quote, get_quote, search_quote, list_quotes, init_db
+
+
+logger = logging.getLogger('plugins.quotes')
 
 
 class QuotePlugin(Plugin):
@@ -18,7 +24,7 @@ class QuotePlugin(Plugin):
         self.bot.register_command('listquotes', self.list_quotes_handler)
 
     def add_quote_handler(self, msg, *args):
-        """ Adds a new quote (use via reply) """
+        """Adds a new quote (use via reply)"""
         if hasattr(msg, 'reply_to_message'):
             try:
                 quote = add_quote(msg)
@@ -30,7 +36,7 @@ class QuotePlugin(Plugin):
             self.bot.send_reply(msg, "Sorry, don’t know what to add. \U0001F615")
 
     def get_random_quote_handler(self, msg, *args):
-        """ Prints random quote """
+        """Prints random quote"""
         quote = get_random_quote(msg)
         try:
             self.bot.send_reply(msg, format_quote(quote))
@@ -38,7 +44,7 @@ class QuotePlugin(Plugin):
             self.bot.send_reply(msg, "Sorry, I don’t have any quotes for this chat yet. Go add some! \U0001F609")
 
     def get_quote_handler(self, msg, *args):
-        """ Prints specific quote (specify ID)"""
+        """Prints specific quote (specify ID)"""
         match = re.match('/getquote(@\w+)?\s(\d+)', msg.text)
         try:
             quote_id = match.group(2)
@@ -53,7 +59,7 @@ class QuotePlugin(Plugin):
             self.bot.send_reply(msg, "Sorry, I don’t have a quote with that ID in my database. \U0001F61E")
 
     def search_quote_handler(self, msg, *args):
-        """ Searches quote by string """
+        """Searches quote by string"""
         match = re.match('/searchquote(@\w+)?\s(.*)', msg.text)
         try:
             search_string = match.group(2)
@@ -68,9 +74,11 @@ class QuotePlugin(Plugin):
             self.bot.send_reply(msg, "Sorry, I don’t have any quotes containing that string. \U0001F61E")
 
     def list_quotes_handler(self, msg, *args):
-        """ Lists all available quotes """
+        """Send text file with all quotes"""
         quotes = list_quotes(msg)
         if quotes:
-            self.bot.send_reply(msg, format_quotes_list(quotes))
+            document = BytesIO(str.encode(format_quotes_list(quotes)))
+            document.name = 'quotes.txt'
+            self.bot.send_document(msg.chat.id, document)
         else:
             self.bot.send_reply(msg, "Sorry, I don’t have any quotes for this chat. \U0001F61E")
