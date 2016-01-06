@@ -1,8 +1,7 @@
 import os
 
 from os.path import dirname, abspath
-from setuptools import setup
-
+from setuptools import setup, find_packages
 
 # don't try this at home kids
 import distutils.command
@@ -42,7 +41,7 @@ setup(
     author='buckket',
     author_email='buckket@cock.li',
 
-    packages=['helga'],
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
 
     include_package_data=True,
     zip_safe=False,

@@ -35,47 +35,44 @@ class Helga:
         self._command_handlers = {}
         self._message_handlers = []
         self._command_prefix = '/'
-        asyncio.ensure_future(self._init())
         self._plugin_repository = PluginRepository(self)
         self._plugin_repository.load_all()
         self.myself = None
+        self._run = True
 
     @asyncio.coroutine
-    def _init(self):
+    def update_accountinformation(self):
         try:
             logger.info('Retrieving account information')
             cmd = GetMe()
             self.myself = yield from self._execute_command(cmd)
             logger.info('Successfully loaded account information.'
                         ' Username: {username}'.format(username=self.myself.username))
-            asyncio.ensure_future(self._poll_updates())
         except Exception as exc:
             logger.critical('Error retrieving account information')
-            self.shutdown(exc=exc)
 
     @asyncio.coroutine
-    def _poll_updates(self):
-        try:
-            cmd = GetUpdates(timeout=10, offset=self._last_update_id)
-            updates = yield from self._execute_command(cmd)
-            for update in updates:
-                self._last_update_id = update.update_id + 1
-                self._loop.call_soon(self._handle_update, update)
-        except Exception as e:
-            logger.exception(e)
-            # just sleep a bit, we don't want to accidentially spam the server
-            yield from asyncio.sleep(5)
-        finally:
-            asyncio.ensure_future(self._poll_updates())
+    def get_updates(self):
+        self._run = True
+        yield from self.update_accountinformation()
 
-    def shutdown(self, exc=None):
-        if exc:
-            logger.exception(exc)
-        logger.info('Shutting down')
-        self._loop.stop()
+        while self._run:
+            try:
+                cmd = GetUpdates(timeout=10, offset=self._last_update_id)
+                updates = yield from self._execute_command(cmd)
+                for update in updates:
+                    self._last_update_id = update.update_id + 1
+                    self._loop.call_soon(self._handle_update, update)
+            except Exception as e:
+                logger.exception(e)
+                # just sleep a bit, we don't want to accidentially spam the server
+                yield from asyncio.sleep(5)
+
+    def shutdown(self):
+        self._run = False
 
     @asyncio.coroutine
-    def _execute_command(self, command):
+    def _execute_command(self, command, headers=None):
         action = {'get': aiohttp.get,
                   'post': aiohttp.post}.get(command.method)
         if logger.isEnabledFor(logging.DEBUG):
@@ -84,10 +81,12 @@ class Helga:
                                                                                           data=command.get_data()))
         r = yield from action(API_URL.format(token=config.get('bot')['token'], method=command.command),
                               params=command.get_params(),
-                              data=command.get_data())
+                              data=command.get_data(),
+                              headers=headers)
 
         resp = yield from r.json()
         if not resp['ok']:
+            print(resp)
             raise Exception('Error while processing Request')
         return command.parse_result(resp['result'])
 
