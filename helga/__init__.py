@@ -155,10 +155,12 @@ class Helga:
 
     @asyncio.coroutine
     def download(self, file_id):
-        """ Downloads a File and returns its data
+        """Downloads a file and returns its data.
 
-        :param resource: Resource
-        :return: bytes
+        :param file_id: Resource by file_id.
+        :type file_id: int
+        :return: Tuple containing file_path and actual binary data.
+        :rtype: tuple
         """
         cmd = GetFile(file_id=file_id)
         file = yield from self._execute_command(cmd)

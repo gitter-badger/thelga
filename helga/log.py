@@ -1,3 +1,13 @@
+"""
+    helga.log
+    ~~~~~~~~~
+
+    This module configures the logging module for helga.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
 import os
 import logging
 import logging.handlers

@@ -1,6 +1,7 @@
 bot:
   token: token
   owner: username
+
 plugins:
   'helga.plugins:HelpPlugin':
     null

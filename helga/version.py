@@ -1,4 +1,15 @@
+"""
+    helga.version
+    ~~~~~~~~~~~~~
+
+    This module retries version information from git tags.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
 from subprocess import check_output
+
 
 command = 'git describe --tags --long --dirty'
 

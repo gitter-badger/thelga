@@ -1,27 +1,37 @@
-from helga.telegram.api.types import Type, InputFile, String, Boolean, Integer, Update, Structure, User, Descriptor, \
-    File, Float
+"""
+    helga.telegram.commands
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    This module defines the Telegram API commands as structures.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
+from helga.telegram.api.types import (Type, InputFile, String, Boolean, Integer, Update, Structure, User, Descriptor,
+                                      File, Float)
 
 
 class TelegramCommand(Structure):
-    """ TelegramCommand base structure
+    """TelegramCommand base structure.
 
-    if you implement a new command you need to overwrite at least:
+    If you implement a new command you need to overwrite at least:
     __command__ and parse_result
-
     """
-
-    __command__ = None  # command (or method) string see telegram botapi for available commands
+    __command__ = None  # command (or method) string see telegram Bot API for available commands
     __method__ = 'get'  # HTTP-Method (get or post)
 
     def get_params(self):
-        """ Returns a dict with URL-Query parameters for this command
+        """Returns a dict with URL-Query parameters for this command.
+
         :return: dict
         """
         return {k: v.cls.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
                 (isinstance(v, Descriptor) and isinstance(v.cls, Type) and v.cls.target == 'params')}
 
     def get_data(self):
-        """ Returns a dict with Formdata elements for this command
+        """Returns a dict with formdata elements for this command.
+
         :return: dict
         """
         return {k: v.cls.get_value(getattr(self, k)) for k, v in self.__class__.__dict__.items() if
@@ -40,7 +50,7 @@ class TelegramCommand(Structure):
 
 
 class GetMe(TelegramCommand):
-    """ Command structure for the getMe command
+    """Command structure for the getMe command.
 
     see https://core.telegram.org/bots/api#getme
     """
@@ -48,7 +58,7 @@ class GetMe(TelegramCommand):
     __method__ = 'get'
 
     def parse_result(self, result):
-        """ Parses the Result of the getMe Command
+        """Parses the Result of the getMe Command.
 
         :param result: dict
         :return: helga.telegram.api.types.User
@@ -57,7 +67,7 @@ class GetMe(TelegramCommand):
 
 
 class SendMessage(TelegramCommand):
-    """ Command structure for the sendMessage command
+    """Command structure for the sendMessage command.
 
     see https://core.telegram.org/bots/api#sendmessage
     """
@@ -69,11 +79,11 @@ class SendMessage(TelegramCommand):
     parse_mode = String()
     disable_web_page_preview = Boolean()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class ForwardMessage(TelegramCommand):
-    """ Command structure for the forwardMessage command
+    """Command structure for the forwardMessage command.
 
     see https://core.telegram.org/bots/api#forwardmessage
     """
@@ -86,7 +96,7 @@ class ForwardMessage(TelegramCommand):
 
 
 class SendPhoto(TelegramCommand):
-    """ Command structure for the sendPhoto command
+    """Command structure for the sendPhoto command.
 
     see https://core.telegram.org/bots/api#sendphoto
     """
@@ -97,10 +107,14 @@ class SendPhoto(TelegramCommand):
     photo = InputFile()
     caption = String()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendAudio(TelegramCommand):
+    """Command structure for the sendAudio command.
+
+    see https://core.telegram.org/bots/api#sendaudio
+    """
     __command__ = 'sendAudio'
     __method__ = 'post'
 
@@ -110,30 +124,42 @@ class SendAudio(TelegramCommand):
     performer = String()
     title = String()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendDocument(TelegramCommand):
+    """Command structure for the sendPDocument command.
+
+    see https://core.telegram.org/bots/api#senddocument
+    """
     __command__ = 'sendDocument'
     __method__ = 'post'
 
     chat_id = String()
     document = InputFile()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendSticker(TelegramCommand):
+    """Command structure for the sendSticker command.
+
+    see https://core.telegram.org/bots/api#sendsticker
+    """
     __command__ = 'sendSticker'
     __method__ = 'post'
 
     chat_id = String()
     sticker = InputFile()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendVideo(TelegramCommand):
+    """Command structure for the sendVideo command.
+
+    see https://core.telegram.org/bots/api#sendvideo
+    """
     __command__ = 'sendVideo'
     __method__ = 'post'
 
@@ -142,10 +168,14 @@ class SendVideo(TelegramCommand):
     duration = Integer()
     caption = String()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendVoice(TelegramCommand):
+    """Command structure for the sendVoice command.
+
+    see https://core.telegram.org/bots/api#sendvoice
+    """
     __command__ = 'sendVoice'
     __method__ = 'post'
 
@@ -153,20 +183,28 @@ class SendVoice(TelegramCommand):
     voice = InputFile()
     duration = Integer()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendLocation(TelegramCommand):
+    """Command structure for the sendLocation command.
+
+    see https://core.telegram.org/bots/api#sendlocation
+    """
     __command__ = 'sendLocation'
     __method__ = 'post'
 
     latitude = Float()
     longitude = Float()
     reply_to_message_id = Integer()
-    #reply_markup = ReplyMarkup
+    # reply_markup = ReplyMarkup
 
 
 class SendChatAction(TelegramCommand):
+    """Command structure for the sendChatAction command.
+
+    see https://core.telegram.org/bots/api#sendchataction
+    """
     __command__ = 'sendChatAction'
     __method__ = 'post'
 
@@ -175,6 +213,10 @@ class SendChatAction(TelegramCommand):
 
 
 class GetUserProfilePhotos(TelegramCommand):
+    """Command structure for the getUserProfilePhotos command.
+
+    see https://core.telegram.org/bots/api#sendphoto
+    """
     __command__ = 'getUserProfilePhotos'
     __method__ = 'get'
 
@@ -184,12 +226,13 @@ class GetUserProfilePhotos(TelegramCommand):
 
 
 class GetUpdates(TelegramCommand):
-    """ Command structure for the getUpdates command
+    """Command structure for the getUpdates command.
 
-    see https://core.telegram.org/bots/api#getupdates
+    see https://core.telegram.org/bots/api#getuserprofilephotos
     """
     __command__ = 'getUpdates'
     __method__ = 'get'
+
     timeout = Integer()
     limit = Integer()
     offset = Integer()
@@ -203,7 +246,7 @@ class GetUpdates(TelegramCommand):
 
 
 class GetFile(TelegramCommand):
-    """ Command structure for the getFile command
+    """Command structure for the getFile command.
 
     see https://core.telegram.org/bots/api#getfile
     """

@@ -46,11 +46,11 @@ class Quote(QuoteModel):
 
 
 def _get_db_user(user, update=True):
-    """
-    Returns a User object from database or creates it, in case it doesnt exist.
-    :param user: telebot.types.User
+    """Returns a User object from database or creates it, in case it doesnt exist.
+
+    :param user: helga.telegram.types.User
     :param update: Update data according to newest metadata received with the message.
-    :return: helga.quotes.User
+    :return: helga.plugins.quotes.User
     """
     db_user, created = User.get_or_create(id=user.id, defaults={'first_name': user.first_name})
 
@@ -64,11 +64,11 @@ def _get_db_user(user, update=True):
 
 
 def _get_db_chat(chat, update=True):
-    """
-    Returns a Chat object from database or creates it, in case it doesnt exist.
-    :param chat: telebot.types.Chat
+    """Returns a Chat object from database or creates it, in case it doesnt exist.
+
+    :param chat: helga.telegram.types.Chat
     :param update: Update data according to newest metadata received with the message.
-    :return: helga.quotes.Chat
+    :return: helga.plugins.quotes.Chat
     """
     db_chat, created = Chat.get_or_create(id=chat.id, defaults={'type': chat.type})
 
@@ -84,10 +84,10 @@ def _get_db_chat(chat, update=True):
 
 
 def add_quote(message):
-    """
-    Adds quote to database, returns Quote object.
-    :param message: telebot.types.Message
-    :return: helga.quotes.Quote
+    """Adds quote to database, returns Quote object.
+    
+    :param message: helga.telegram.types.Message
+    :return: helga.plugins.quotes.Quote
     """
     db.connect()
 
@@ -111,10 +111,10 @@ def add_quote(message):
 
 
 def get_random_quote(message):
-    """
-    Returns random quote for the chat in which message was sent.
-    :param message: telebot.types.Message
-    :return: helga.quotes.Quote
+    """Returns random quote for the chat in which message was sent.
+
+    :param message: helga.telegram.types.Message
+    :return: helga.plugins.quotes.Quote
     """
     db.connect()
 
@@ -129,11 +129,11 @@ def get_random_quote(message):
 
 
 def get_quote(message, quote_id):
-    """
-    Returns a specific quote by id for the chat in which message was sent.
-    :param message: telebot.types.Message
+    """Returns a specific quote by id for the chat in which message was sent.
+
+    :param message: helga.telegram.types.Message
     :param quote_id: int
-    :return: helga.quotes.Quote
+    :return: helga.plugins.quotes.Quote
     """
     db.connect()
 
@@ -148,9 +148,9 @@ def get_quote(message, quote_id):
 
 
 def search_quote(message, search_string):
-    """
-    Returns a iterable containing every quote which includes search_string.
-    :param message: telebot.types.Message
+    """Returns a iterable containing every quote which includes search_string.
+
+    :param message: helga.telegram.types.Message
     :param search_string: str
     :return: peewee.SelectQuery
     """
@@ -164,9 +164,9 @@ def search_quote(message, search_string):
 
 
 def list_quotes(message):
-    """
-    Returns all quotes for a specific chat.
-    :param message: telebot.types.Message
+    """Returns all quotes for a specific chat.
+
+    :param message: helga.telegram.types.Message
     :return: peewee.SelectQuery
     """
     db.connect()
@@ -179,9 +179,7 @@ def list_quotes(message):
 
 
 def init_db():
-    """
-    Initializes database, creates tables if necessary.
-    """
+    """Initializes database, creates tables if necessary."""
     db.connect()
     db.create_tables([Chat, User, Quote], True)
     db.close()

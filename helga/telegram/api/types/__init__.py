@@ -1,16 +1,24 @@
+"""
+    helga.telegram.types
+    ~~~~~~~~~~~~~~~~~~~~
+
+    This module defines the Telegram API types as classes.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
 import asyncio
 import datetime
 
 
 class Reference:
-    """ This class Keeps a reference to another Structure
-    """
+    """This class keeps a reference to another structure."""
     def __init__(self, ref):
         self.ref = ref
 
 
 class Descriptor(object):
-
     def __init__(self, name, cls, default=None):
         self.name = name
         self.cls = cls
@@ -34,7 +42,6 @@ class Descriptor(object):
 
 
 class StructureMeta(type):
-
     def __init__(cls, name, bases, nmspc):
         super(StructureMeta, cls).__init__(name, bases, nmspc)
         if not hasattr(cls, 'registry'):
@@ -52,9 +59,7 @@ class StructureMeta(type):
 
 
 class Type:
-    """ Baseclass for all Types
-    like scalar Values returned by the Telegram API
-    """
+    """Base class for every type returned by the Telegram API."""
     __target__ = 'params'
 
     def __init__(self, required=True):
@@ -72,16 +77,14 @@ class Type:
 
 
 class Structure(object, metaclass=StructureMeta):
-    """ Base class for Structures returned by the Telegram API
-    """
-
+    """Base class for all structures returned by the Telegram API."""
     def __init__(self, *args, **kwargs):
         for k, v in kwargs.items():
             try:
                 ce = getattr(self.__class__, k)
             except AttributeError:
                 # this is a stupid hack due to my laziness
-                # if someone would implement a storage and/or lookuptable we wouldn't rely on the
+                # if someone would implement a storage and/or look-up-table we wouldn't rely on the
                 # classmembernames directly
                 ce = getattr(self.__class__, k+'_')
                 k += '_'
@@ -90,7 +93,7 @@ class Structure(object, metaclass=StructureMeta):
                 setattr(self, k, v)
 
     def get_value(self):
-        """ Returns this Structure and all substructures as a dict to be fed into some json encoder
+        """Returns this structure and all substructures as a dict to be fed into some json encoder.
 
         :return: dict
         """
@@ -123,7 +126,6 @@ class Bytes(Type):
 
 
 class Date(Type):
-
     def parse_value(self, val):
         return datetime.datetime.fromtimestamp(int(val))
 
@@ -135,22 +137,19 @@ class Date(Type):
 
 
 class InputFile(Type):
-    """ This Type represents a File to be Uploaded to Telegram
-    """
+    """This type represents a file to be uploaded to Telegram."""
     __target__ = 'data'
 
 
 class File(Structure):
-    """ Fileinformation struct returned by the Telegram API
-    """
+    """File information struct returned by the Telegram API."""
     file_id = String()
     file_size = Integer()
     file_path = String()
 
 
 class Resource(Structure):
-    """ Baseclass for Resources posted in chat
-    """
+    """Base class for resources posted in chat."""
     file_id = String()
     file_size = Integer()
     contents = Bytes()
@@ -158,12 +157,12 @@ class Resource(Structure):
 
     @asyncio.coroutine
     def download(self, bot):
-        """ Downloads this resource
+        """Downloads this resource.
 
         Cached data will be returned if available.
 
         :param bot: helga.Helga
-        :return: binary Data
+        :return: binary data
         """
         if self.contents is None:
             # if no data cached, download
@@ -171,32 +170,70 @@ class Resource(Structure):
         return self.contents
 
 
-class VoiceResource(Resource):
-    duration = Integer()
-    mime_type = String()
-
-
 class PhotoResource(Resource):
-
     width = Integer()
     height = Integer()
 
 
-class StickerResource(PhotoResource):
-    thumb = Reference("PhotoResource")
-
-
 class PhotoSizes(Structure):
-    """ List of Photo Resources
+    """List of photo resources.
 
-    this is actually a Resource but since Telegram provides multiple sizes for pictures
-    we need to represent them somehow
+    This is actually a resource, but since Telegram provides
+    multiple sizes for pictures we need to represent them somehow.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.photos = []
         for photo_args in args:
             self.photos.append(PhotoResource(**photo_args))
+
+
+class AudioResource(Resource):
+    duration = Integer()
+    performer = String()
+    title = String()
+    mime_type = String()
+
+
+class DocumentResource(Resource):
+    thumb = Reference("PhotoResource")
+    file_name = String()
+    mime_type = String()
+
+
+class StickerResource(PhotoResource):
+    thumb = Reference("PhotoResource")
+
+
+class VideoResource(Resource):
+    width = Integer()
+    height = Integer()
+    duration = Integer()
+    thumb = Reference("PhotoResource")
+    mime_type = String()
+
+
+class VoiceResource(Resource):
+    duration = Integer()
+    mime_type = String()
+
+
+class Contact(Structure):
+    phone_number = String()
+    first_name = String()
+    last_name = String()
+    user_id = Integer()
+
+
+class Location(Structure):
+    longitude = Float()
+    latitude = Float()
+
+
+# TODO: Implement MUltiPhotoSizes
+#class UserProfilePhotos(Structure):
+    #total_count = Integer()
+    #photos = Reference("MultiPhotoSizes")
 
 
 class User(Structure):
@@ -220,14 +257,29 @@ class Message(Structure):
     from_ = Reference("User")
     date = Date()
     chat = Reference("Chat")
-    reply_to_message = Reference("Message")
     forward_from = Reference("User")
-    forward_date = Integer()
+    forward_date = Date()
+    reply_to_message = Reference("Message")
     text = String()
-    caption = String()
-    voice = Reference("VoiceResource")
+    audio = Reference("AudioResource")
+    document = Reference("DocumentResource")
     photo = Reference("PhotoSizes")
     sticker = Reference("StickerResource")
+    video = Reference("VideoResource")
+    voice = Reference("VoiceResource")
+    caption = String()
+    contact = Reference("Contact")
+    location = Reference("Location")
+    new_chat_participant = Reference("User")
+    left_chat_participant = Reference("User")
+    new_chat_title = String()
+    new_chat_photo = Reference("PhotoSizes")
+    delete_chat_photo = Boolean()
+    group_chat_created = Boolean()
+    supergroup_chat_created = Boolean()
+    channel_chat_created = Boolean()
+    migrate_to_chat_id = Integer()
+    migrate_from_chat_id = Integer()
 
 
 class Update(Structure):

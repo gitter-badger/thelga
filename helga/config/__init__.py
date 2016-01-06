@@ -1,3 +1,13 @@
+"""
+    helga.config
+    ~~~~~~~~~~~~
+
+    This module reads and parses the bots configuration file and handles CLI arguments.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
 import os
 import argparse
 

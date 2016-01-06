@@ -1,3 +1,13 @@
+"""
+    helga.app
+    ~~~~~~~~~
+
+    This module implements the main event loop and signal handler.
+
+    :copyright: (c) 2015 by buckket, teddydestodes.
+    :license: MIT, see LICENSE for more details.
+"""
+
 import logging
 import signal
 import asyncio
