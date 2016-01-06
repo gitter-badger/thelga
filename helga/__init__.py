@@ -86,7 +86,7 @@ class Helga:
 
         resp = yield from r.json()
         if not resp['ok']:
-            print(resp)
+            logger.debug(resp)
             raise Exception('Error while processing Request')
         return command.parse_result(resp['result'])
 

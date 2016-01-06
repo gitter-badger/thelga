@@ -70,6 +70,7 @@ class HelpPlugin(Plugin):
 
 
 class RegisterChat(Plugin):
+    """A plugin to save chat_ids for later use."""
 
     def register(self):
         self.bot.register_command('chat_register', self.chat_register, chat_types=('private',))
